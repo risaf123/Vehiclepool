@@ -1,5 +1,8 @@
 package backend;
 
+import model.Ride;
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.*;
 
 public class RideDAO {
@@ -34,5 +37,45 @@ public class RideDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Ride> searchRides(String pickupPoint) {
+        List<Ride> rides = new ArrayList<>();
+
+        String sql = "SELECT r.ride_id, r.driver_id, u.name AS driver_name, r.vehicle_id, v.vehicle_no, " +
+                     "r.source, r.destination, r.pickup_point, r.ride_date, r.ride_time, " +
+                     "r.available_seats, r.price_per_seat " +
+                     "FROM rides r " +
+                     "JOIN users u ON r.driver_id = u.user_id " +
+                     "JOIN vehicles v ON r.vehicle_id = v.vehicle_id " +
+                     "WHERE r.pickup_point = ? AND r.available_seats > 0 AND r.status = 'SCHEDULED'";
+
+        try (Connection con = DriverManager.getConnection(URL, DB_USER, DB_PASSWORD);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, pickupPoint);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                rides.add(new Ride(
+                    rs.getInt("ride_id"),
+                    rs.getInt("driver_id"),
+                    rs.getString("driver_name"),
+                    rs.getInt("vehicle_id"),
+                    rs.getString("vehicle_no"),
+                    rs.getString("source"),
+                    rs.getString("destination"),
+                    rs.getString("pickup_point"),
+                    rs.getString("ride_date"),
+                    rs.getString("ride_time"),
+                    rs.getInt("available_seats"),
+                    rs.getDouble("price_per_seat")
+                ));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rides;
     }
 }

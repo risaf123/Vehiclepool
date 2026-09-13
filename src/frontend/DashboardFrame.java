@@ -15,22 +15,24 @@ public class DashboardFrame extends JFrame {
         panel.setLayout(new java.awt.GridLayout(3, 1, 10, 10));
 
         JLabel welcome = new JLabel("Welcome, " + currentUser.getName() + "!", SwingConstants.CENTER);
+        
         JButton postRideBtn = new JButton("Post a Ride");
         postRideBtn.addActionListener(e -> {
             UserDAO userDAO = new UserDAO();
             if (userDAO.isEligibleToDrive(currentUser)) {
-                new PostRideFrame(currentUser).setVisible(true);  //setVisible make winodw appear on screen
+                new PostRideFrame(currentUser).setVisible(true);  //setVisible make window appear on screen
             } else {
                 new DriverDetailsFrame(currentUser).setVisible(true);
             }
         });
+        
         JButton searchRideBtn = new JButton("Search / Book a Ride");
+        searchRideBtn.addActionListener(e -> new SearchRideFrame(currentUser).setVisible(true));
 
         panel.add(welcome);
         panel.add(postRideBtn);
         panel.add(searchRideBtn);
 
-        // We'll wire these buttons up once PostRideFrame / SearchRideFrame exist
         add(panel);
     }
 }
