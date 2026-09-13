@@ -1,5 +1,5 @@
 package frontend;
-
+import backend.UserDAO;
 import model.User;
 import javax.swing.*;
 
@@ -16,6 +16,14 @@ public class DashboardFrame extends JFrame {
 
         JLabel welcome = new JLabel("Welcome, " + currentUser.getName() + "!", SwingConstants.CENTER);
         JButton postRideBtn = new JButton("Post a Ride");
+        postRideBtn.addActionListener(e -> {
+            UserDAO userDAO = new UserDAO();
+            if (userDAO.isEligibleToDrive(currentUser)) {
+                new PostRideFrame(currentUser).setVisible(true);  //setVisible make winodw appear on screen
+            } else {
+                new DriverDetailsFrame(currentUser).setVisible(true);
+            }
+        });
         JButton searchRideBtn = new JButton("Search / Book a Ride");
 
         panel.add(welcome);
